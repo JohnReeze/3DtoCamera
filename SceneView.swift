@@ -9,7 +9,6 @@
 import UIKit
 
 class SceneView: UIView {
-    var lines = [[Line]]()
     var facets = [Facet]()
     var helpFacets = [Facet]()
     var lastPoint : CGPoint!
@@ -58,15 +57,28 @@ class SceneView: UIView {
         }
         var drawIndexs = [Int]()
         var drawnPathes = [UIBezierPath]()
+        let bottom = getBottom()
+        var seen = false
         UIColor.yellow.setFill()
-        UIColor.clear.setStroke()
         for i in 0..<pathes.count {
-            facets[i].color.setStroke()
+            if pathes[i].contains(CGPoint(x: x, y: y)) {
+                if facets[i].z < 0.0 {
+                    seen = true
+                }
+            }
             facets[i].color.setFill()
             pathes[i].close()
             pathes[i].fill()
             pathes[i].stroke()
         }
+        
+        if seen {
+            UIColor.black.setFill()
+            bottom.close()
+            bottom.fill()
+            bottom.stroke()
+        }
+    
            /* var fIn = false
             var fInNum = -1
             for j in 0..<drawnPathes.count {

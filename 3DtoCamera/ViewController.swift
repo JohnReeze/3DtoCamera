@@ -18,16 +18,39 @@ class ViewController: UIViewController {
     @IBOutlet weak var sceneView: SceneView!
     //let pir = Pyramide!
      let camera = Camera()
-
-    var light = Vertex(0,600,0)
-    
-    
+    var n = 15
+    var height: CGFloat = 100.0
+    var radius: CGFloat = 100.0
+    var light = Vertex(1000,1000,1000)
+    var timer: Timer!
+    var radiusSlider : UISlider!
+    var heightSlider : UISlider!
+    @IBOutlet weak var facetsLabel: UILabel!
+    var list = [Vertex]()
+    var i = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(changeCamera), name: NSNotification.Name(rawValue: "changeCamera"), object: nil)
-        let a = Facet(Vertex(0,0,-100), Vertex(0,100,0), Vertex(100,0,0), z: 12.3, cameraPos: light, n: 2)
         recalculate()
-        var list = [Vertex]()
+        radiusSlider = UISlider(frame: CGRect(x: 15.0, y: view.frame.height - 40.0, width: self.view.frame.width - 20.0, height: 20.0))
+        radiusSlider.minimumValue = 10
+        radiusSlider.tintColor = UIColor.red
+        radiusSlider.maximumValue = 200
+        radiusSlider.value = Float(radius)
+        radiusSlider.addTarget(self, action: #selector(radOrHeightChanged), for: .valueChanged)
+        radiusSlider.tag = 1
+        let tmpW = view.frame.width * 1.3
+        heightSlider = UISlider(frame: CGRect(x: 20.0 - tmpW / 2.0, y: view.frame.height - 40.0 - tmpW / 2.0 , width: tmpW, height: 20.0))
+        heightSlider.minimumValue = 10
+        heightSlider.tintColor = UIColor.red
+        heightSlider.maximumValue = 250
+        heightSlider.value = Float(height)
+        heightSlider.tag = 2
+        heightSlider.transform = heightSlider.transform.rotated(by: ( CGFloat(-1 * Double.pi / 2.0) ))
+        heightSlider.addTarget(self, action: #selector(radOrHeightChanged), for: .valueChanged)
+        view.addSubview(radiusSlider)
+        view.addSubview(heightSlider)
+        
         let n  = 500
         let r = CGFloat(1000.0)
         for i in 0..<n {
@@ -35,20 +58,44 @@ class ViewController: UIViewController {
             let z = CGFloat(r * cos(CGFloat(i) * 2.0 * CGFloat.pi / CGFloat(n) ))
             list.append(Vertex(x,0.0,z))
         }
-        var i = 0
-      /*  Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { (timer) in
-            if i == n-1 {
-                i = 0
-            }
-            self.light.x = list[i].x
-            self.light.z = list[i].z
-            self.recalculate()
-            i += 1
-        }*/
-        
-    
     }
     
+    @IBAction func numberOfFacetsChanged(_ sender: UIStepper) {
+        self.n = Int(sender.value)
+        facetsLabel.text = "Number of facets (curr =" + String(n) + ")"
+        recalculate()
+    }
+    
+    @IBAction func lightStopsOrStarts(_ sender: UISwitch) {
+        if sender.isOn {
+            startTimer()
+        } else {
+            timer.invalidate()
+        }
+    }
+    
+    func radOrHeightChanged(_ sender: UISlider) {
+        if sender.tag == 1 {
+            self.radius = CGFloat(sender.value)
+        } else {
+            self.height = CGFloat(sender.value)
+        }
+        recalculate()
+    }
+    
+    func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 0.02, target: self, selector: #selector(runTimer), userInfo: nil, repeats: true)
+    }
+    
+    func runTimer() {
+        if i == 499 {
+            i = 0
+        }
+        self.light.x = list[i].x
+        self.light.z = list[i].z
+        self.recalculate()
+        i += 1
+    }
     func changeCamera( notif: Notification) {
         let dict = notif.userInfo as! [String : CGFloat]
         camera.turnY += dict["difX"]! / 10000.0
@@ -59,8 +106,8 @@ class ViewController: UIViewController {
     }
     
     func recalculate() {
-        let pirHelp = Pyramide(height: 100, numberOfFacets: 10, radius: 50)
-        let pir = Pyramide(height: 100, numberOfFacets: 10, radius: 50)
+        let pirHelp = Pyramide(height: self.height, numberOfFacets: self.n, radius: self.radius)
+        let pir = Pyramide(height: self.height, numberOfFacets: self.n, radius: self.radius)
         
         let help = camera.turnOverXMatrix() * camera.turnOverYMatrix() * camera.turnOverZMatrix()
         for i in 0..<pir.vertexList.count {
@@ -79,17 +126,6 @@ class ViewController: UIViewController {
         
         sceneView.setNeedsDisplay()
         self.view.setNeedsDisplay()
-    }
-}
-
-
-struct  Line {
-    var start: CGPoint
-    var end: CGPoint
-    
-    init(start: CGPoint, end: CGPoint) {
-        self.start = start
-        self.end = end
     }
 }
 
@@ -136,23 +172,27 @@ struct Facet {
         self.z = z
         number = n
         
-        let b1 = ver2.x - ver1.x
+        let a2 = ver2.x - ver1.x
         let b2 = ver2.y - ver1.y
-        let b3 = ver2.z - ver1.z
+        let c2 = ver2.z - ver1.z
         
-        let c1 = ver3.x - ver1.x
-        let c2 = ver3.y - ver1.y
+        let a3 = ver3.x - ver1.x
+        let b3 = ver3.y - ver1.y
         let c3 = ver3.z - ver1.z
         
         nx = b2 * c3 - b3 * c2
-        ny = b2 * c1 - b1 * c3
-        nz = b1 * c2 - b2 * c1
-        
+        ny = a3 * c2 - a2 * c3
+        nz = a2 * b3 - b2 * a3
+    
         let helpVertex = Vertex((ver2.x + ver3.x) / 2.0, (ver2.y + ver3.y) / 2.0, (ver2.z + ver3.z) / 2.0)
         let center = Vertex( (helpVertex.x + ver1.x) / 2.0, (helpVertex.y + ver1.y) / 2.0, (helpVertex.z + ver1.z) / 2.0)
         
         let cameraVector = Vertex.getVector(fromVertex: center, toVertex: cameraPos)
-        let normal = Vertex( -nx,-ny,-nz)
+        var normal = Vertex(nx,ny,nz)
+        if ny < 0.0 {
+            normal = Vertex(-nx,-ny,-nz)
+        }
+
         let intensity =  (cameraVector * normal) / (cameraVector.getScalar() *  normal.getScalar())
         print(intensity)
         

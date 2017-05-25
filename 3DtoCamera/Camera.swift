@@ -13,7 +13,7 @@ class Camera: NSObject {
     var y : CGFloat = 0.0
     var z : CGFloat = 0.0
     
-    //var cameraPos = Vertex(100,100,100)
+
     
     var turnX : CGFloat {
         get {
