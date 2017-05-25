@@ -13,18 +13,14 @@ class Camera: NSObject {
     var y : CGFloat = 0.0
     var z : CGFloat = 0.0
     
-    var cameraPos = Vertex(100,100,100)
+    //var cameraPos = Vertex(100,100,100)
     
     var turnX : CGFloat {
         get {
             return self.x
         }
         set (newValue) {
-            if newValue < 1.0  && newValue > 0.0 {
-                self.x = newValue
-            } else {
-                self.x = 0
-            }
+            self.x = newValue
         }
     }
     
@@ -33,11 +29,7 @@ class Camera: NSObject {
             return self.y
         }
         set (newValue) {
-            if newValue < 1.0  && newValue > 0.0 {
-                self.y = newValue
-            } else {
-                self.y = 0
-            }
+           self.y = newValue
         }
     }
     
@@ -46,11 +38,7 @@ class Camera: NSObject {
             return self.z
         }
         set (newValue) {
-            if newValue < 1.0  && newValue > 0.0 {
-                self.z = newValue
-            } else {
-                self.z = 0
-            }
+            self.z = newValue
         }
     }
     

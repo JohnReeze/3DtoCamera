@@ -11,6 +11,7 @@ import UIKit
 class SceneView: UIView {
     var lines = [[Line]]()
     var facets = [Facet]()
+    var helpFacets = [Facet]()
     var lastPoint : CGPoint!
     var vertexs = [Vertex]()
     var dist : CGPoint!
@@ -57,9 +58,16 @@ class SceneView: UIView {
         }
         var drawIndexs = [Int]()
         var drawnPathes = [UIBezierPath]()
-        UIColor.red.setFill()
+        UIColor.yellow.setFill()
+        UIColor.clear.setStroke()
         for i in 0..<pathes.count {
-            var fIn = false
+            facets[i].color.setStroke()
+            facets[i].color.setFill()
+            pathes[i].close()
+            pathes[i].fill()
+            pathes[i].stroke()
+        }
+           /* var fIn = false
             var fInNum = -1
             for j in 0..<drawnPathes.count {
                 if drawnPathes[j].contains(CGPoint(x: x + ((facets[i].p2.x + facets[i].p3.x) / 2.0 + facets[i].p1.x) / 2.0 , y: y - ((facets[i].p2.y + facets[i].p3.y) / 2.0 + facets[i].p1.y ) / 2.0 )) {
@@ -92,13 +100,17 @@ class SceneView: UIView {
                 }
             }
         }
-        
+ 
+            
+        drawIndexs.append(2)
         for k in 0..<drawnPathes.count {
-            //facets[drawIndexs[k]].color.setFill()
+            if k != drawnPathes.count - 1 {
+                facets[drawIndexs[k]].color.setFill()
+            }
             drawnPathes[k].close()
             drawnPathes[k].fill()
             drawnPathes[k].stroke()
-        }
+        }*/
         super.draw(rect)
     }
     
