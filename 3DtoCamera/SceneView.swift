@@ -9,6 +9,7 @@
 import UIKit
 
 class SceneView: UIView {
+    
     var facets = [Facet]()
     var helpFacets = [Facet]()
     var lastPoint : CGPoint!
@@ -55,15 +56,13 @@ class SceneView: UIView {
             path.addLine(to: CGPoint(x: facet.p3.x + x, y: y -  facet.p3.y))
             pathes.append(path)
         }
-        var drawIndexs = [Int]()
-        var drawnPathes = [UIBezierPath]()
         let bottom = getBottom()
-        var seen = false
+        var isSeen = false
         UIColor.yellow.setFill()
         for i in 0..<pathes.count {
             if pathes[i].contains(CGPoint(x: x, y: y)) {
                 if facets[i].z < 0.0 {
-                    seen = true
+                    isSeen = true
                 }
             }
             facets[i].color.setFill()
@@ -72,60 +71,14 @@ class SceneView: UIView {
             pathes[i].stroke()
         }
         
-        if seen {
+        if isSeen {
             UIColor.black.setFill()
             bottom.close()
             bottom.fill()
             bottom.stroke()
         }
-    
-           /* var fIn = false
-            var fInNum = -1
-            for j in 0..<drawnPathes.count {
-                if drawnPathes[j].contains(CGPoint(x: x + ((facets[i].p2.x + facets[i].p3.x) / 2.0 + facets[i].p1.x) / 2.0 , y: y - ((facets[i].p2.y + facets[i].p3.y) / 2.0 + facets[i].p1.y ) / 2.0 )) {
-                    fIn = true
-                    fInNum = j
-                }
-            }
-            if fIn {
-                if facets[i].z >= facets[fInNum].z {
-                    drawnPathes.append(pathes[i])
-                    drawIndexs.append(i)
-                }
-            } else {
-                drawnPathes.append(pathes[i])
-                drawIndexs.append(i)
-            }
-        }
-        
-        let path = getBottom()
-        for j in 0..<drawnPathes.count {
-            if drawnPathes[j].contains(CGPoint(x: x, y: y)) {
-                for i in 0..<pathes.count {
-                    if drawnPathes[j] === pathes[i] {
-                        if facets[i].z < 0.0 {
-                            drawnPathes.append(path)
-                        } else {
-                            break
-                        }
-                    }
-                }
-            }
-        }
- 
-            
-        drawIndexs.append(2)
-        for k in 0..<drawnPathes.count {
-            if k != drawnPathes.count - 1 {
-                facets[drawIndexs[k]].color.setFill()
-            }
-            drawnPathes[k].close()
-            drawnPathes[k].fill()
-            drawnPathes[k].stroke()
-        }*/
         super.draw(rect)
     }
-    
     
     func getBottom()-> UIBezierPath {
         let x = CGFloat(self.frame.width / 2)
@@ -138,7 +91,6 @@ class SceneView: UIView {
         return path
     }
 
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         lastPoint = (touches.first?.location(in: self))!
     }

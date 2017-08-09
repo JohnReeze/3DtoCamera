@@ -9,12 +9,11 @@
 import UIKit
 
 class Camera: NSObject {
+    //coefficients for rotation in 3 dementions
     var x : CGFloat = 0.0
     var y : CGFloat = 0.0
     var z : CGFloat = 0.0
-    
 
-    
     var turnX : CGFloat {
         get {
             return self.x
@@ -46,19 +45,19 @@ class Camera: NSObject {
         super.init()
     }
     
-    
     var d : CGFloat = 1.0
+    //distance to camera
     var dist: CGFloat {
-    get {
-        return self.d
-    }
-    set (newValue) {
-        if newValue < 5.0  && newValue > 0.0 {
-            self.d = newValue
-        } else {
-            self.d = 0.0
-            }
+        get {
+            return self.d
         }
+        set (newValue) {
+            if newValue < 5.0  && newValue > 0.0 {
+                self.d = newValue
+            } else {
+                self.d = 0.0
+                }
+            }
     }
     
     func turnOverXMatrix() -> Matrix {
@@ -96,6 +95,7 @@ class Camera: NSObject {
 }
 
 struct Matrix {
+    
     var matrix = [[CGFloat]]()
     
     static func * (left: Matrix, right: Matrix) -> Matrix {

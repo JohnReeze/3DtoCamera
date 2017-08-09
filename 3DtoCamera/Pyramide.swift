@@ -12,12 +12,12 @@ class Const: NSObject {
 }
 
 class Pyramide: NSObject {
-    var h : CGFloat = 200
-    var n : Int = 8
-    var r : CGFloat = 100
+    var h : CGFloat = 200.0 //height
+    var n : Int = 8 // number of facets
+    var r : CGFloat = 100.0 // radius
     
-    var vertexList = [Vertex]()
-    var colors = [UIColor]()
+    var vertexList = [Vertex]() // all vertexes
+    var colors = [UIColor]() // colors for each vertex
     
     public init(height: CGFloat, numberOfFacets n: Int, radius: CGFloat) {
         super.init()
@@ -25,6 +25,7 @@ class Pyramide: NSObject {
         self.n = n
         r = radius
         vertexList.append(Vertex(0.0, h, 0.0))
+        // calculation of each vertex
         for i in 0..<n {
             let x = CGFloat(r * sin(CGFloat(i) * 2.0 * CGFloat.pi / CGFloat(n) ))
             let z = CGFloat(r * cos(CGFloat(i) * 2.0 * CGFloat.pi / CGFloat(n) ))
@@ -32,7 +33,7 @@ class Pyramide: NSObject {
         }
     }
     
-    
+    // getting colors for each 
     func getFacetsColors(cameraPos: Vertex) -> [UIColor] {
         var colors = [UIColor]()
         for i in 1..<vertexList.count {
